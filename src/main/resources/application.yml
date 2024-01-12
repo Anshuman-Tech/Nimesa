@@ -1,0 +1,29 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: test
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/nimesaDB
+    username: root
+    password: Anshuman007
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAX5XSI5UTUOMGM5F3
+      secret-key: 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
+#    region:
+#      static:
+
