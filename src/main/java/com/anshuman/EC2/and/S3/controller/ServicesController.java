@@ -4,7 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.anshuman.EC2.and.S3.entity.Job;
 import com.anshuman.EC2.and.S3.enums.Status;
 import com.anshuman.EC2.and.S3.repository.BucketFileRepository;
+import com.anshuman.EC2.and.S3.repository.BucketRepository;
 import com.anshuman.EC2.and.S3.repository.JobRepository;
+import com.anshuman.EC2.and.S3.service.EC2Service;
 import com.anshuman.EC2.and.S3.service.HelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,12 +25,18 @@ public class ServicesController {
     @Autowired
     private BucketFileRepository bucketFileRepository;
 
+    @Autowired
+    private BucketRepository bucketRepository;
+
     private final JobRepository jobRepository;
     public ServicesController(JobRepository jobRepository){
         this.jobRepository = jobRepository;
     }
     @Autowired
     private HelperService service;
+
+    @Autowired
+    private EC2Service ec2Service;
 
     @Autowired
     private AmazonS3 s3Client;
@@ -57,11 +65,15 @@ public class ServicesController {
     @GetMapping("/getDiscoveryResult")
     public ResponseEntity<List<? extends Object>> getDiscoveryResult(@RequestParam() String service){
         if(service.equalsIgnoreCase("S3")){
-            return ResponseEntity.status(HttpStatus.OK).body(s3Client.listBuckets());
-//            return ResponseEntity.status(HttpStatus.OK).body(Arrays.asList());
+
+            //Get the result using the s3Client
+//            return ResponseEntity.status(HttpStatus.OK).body(s3Client.listBuckets());
+            //Get the result using the query.
+            return ResponseEntity.status(HttpStatus.OK).body(bucketRepository.findAll());
         }
+        Optional<List<String>> result = ec2Service.getListOfEC2InstanceIds();
         //Return list of db results for EC2 instances.
-        return ResponseEntity.status(HttpStatus.OK).body(Arrays.asList());
+        return ResponseEntity.status(HttpStatus.OK).body(result.get());
     }
 
     //4

@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"fileKey","bucketName"})
-})
 public class BucketFile {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "sequenceGenerator")
@@ -34,5 +31,4 @@ public class BucketFile {
 
     @ManyToOne
     private S3Bucket bucket;
-
 }
