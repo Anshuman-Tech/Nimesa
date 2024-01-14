@@ -35,12 +35,7 @@ public class S3BucketService {
     @Transactional
     public void saveListOfS3ObjectsToDB(String jobId,String bucketName){
         //Intentionally making the thread to sleep for 10 seconds, to test the status update of job.
-        try{
-            Thread.sleep(10000);
-        }
-        catch (Exception e){
-            throw new RuntimeException(e);
-        }
+//        gits 
 
         ObjectListing objectListing = s3Client.listObjects(bucketName);
         if (objectListing != null) {
