@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.anshuman</groupId>
-	<artifactId>EC2-and-S3</artifactId>
+	<artifactId>Nimesa</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>EC2-and-S3</name>
 	<description>Demo project for Spring Boot</description>
