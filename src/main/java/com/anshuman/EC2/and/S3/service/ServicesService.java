@@ -48,11 +48,6 @@ public class ServicesService {
         AtomicBoolean flag = new AtomicBoolean(true);
 
         services.parallelStream().forEach(service->{
-//            try {
-//                Thread.sleep(20000);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
             if(service.equalsIgnoreCase("S3")){
                 List<Bucket> buckets = s3Client.listBuckets();
                 buckets.stream().forEach(bucket -> {
@@ -104,17 +99,20 @@ public class ServicesService {
                     } while (nextToken != null);
 
                 } catch (Ec2RequestFailedException e) {
+                    flag.set(false);
+                    if(!flag.get()){
+                        jobService.updateJob(jobId,"failed");
+                        System.exit(1);
+                    }
                     System.err.println(e.getCause().getMessage());
-                    System.exit(1);
                 }
             }
         });
-        //Update the jobId as success.
         if(flag.get()){
             jobService.updateJob(jobId,"success");
         }
         else{
-            jobService.updateJob(jobId,"success");
+            jobService.updateJob(jobId,"failed");
         }
     }
 }

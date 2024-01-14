@@ -34,6 +34,7 @@ public class S3BucketService {
     @Async("asyncTaskExecutor")
     @Transactional
     public void saveListOfS3ObjectsToDB(String jobId,String bucketName){
+        //Intentionally making the thread to sleep for 10 seconds, to test the status update of job.
         try{
             Thread.sleep(10000);
         }

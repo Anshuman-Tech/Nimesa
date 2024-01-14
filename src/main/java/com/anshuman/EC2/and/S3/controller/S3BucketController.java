@@ -1,5 +1,6 @@
 package com.anshuman.EC2.and.S3.controller;
 
+import com.anshuman.EC2.and.S3.entity.BucketFile;
 import com.anshuman.EC2.and.S3.entity.Job;
 import com.anshuman.EC2.and.S3.enums.Status;
 import com.anshuman.EC2.and.S3.service.BucketFileService;
@@ -20,14 +21,24 @@ import java.util.UUID;
 @RequestMapping("/api")
 public class S3BucketController {
 
-    @Autowired
-    private JobService jobService;
+//    @Autowired
+//    private JobService jobService;
+//
+//    @Autowired
+//    private S3BucketService s3BucketService;
+//
+//    @Autowired
+//    private BucketFileService bucketFileService;
 
-    @Autowired
-    private S3BucketService s3BucketService;
+    private final JobService jobService;
+    private final S3BucketService s3BucketService;
+    private final BucketFileService bucketFileService;
 
-    @Autowired
-    private BucketFileService bucketFileService;
+    public S3BucketController(JobService jobService,S3BucketService s3BucketService, BucketFileService bucketFileService){
+        this.jobService = jobService;
+        this.s3BucketService = s3BucketService;
+        this.bucketFileService = bucketFileService;
+    }
 
     //4
     @GetMapping("/getS3BucketObjects")
