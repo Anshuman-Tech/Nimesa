@@ -8,9 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface BucketRepository extends JpaRepository<S3Bucket,String> {
+public interface S3BucketRepository extends JpaRepository<S3Bucket,String> {
 
-    //To handle the N+1 query
     @EntityGraph(attributePaths = {
             "owner"
     })

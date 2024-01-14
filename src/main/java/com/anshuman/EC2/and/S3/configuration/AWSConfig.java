@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class MyConfig {
+public class AWSConfig {
 
     @Value("${cloud.aws.credentials.access-key}")
     private String accessKey;
@@ -36,17 +36,11 @@ public class MyConfig {
     @Bean
     public AmazonEC2 generateEC2Client(){
         AWSCredentials credentials = new BasicAWSCredentials(accessKey,secretKey);
-//         ec2Client =
         AmazonEC2 ec2Client = AmazonEC2ClientBuilder
-//                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-//                .withRegion(Regions.AP_SOUTH_1)
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(Regions.AP_SOUTH_1)
-//                .credentialsProvider(ProfileCredentialsProvider.create(credentials))
-//                .region(Regions.AP_SOUTH_1)
                 .build();
-
         return ec2Client;
     }
 }

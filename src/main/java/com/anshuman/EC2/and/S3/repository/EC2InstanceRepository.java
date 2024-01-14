@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface EC2Repository extends JpaRepository<EC2Instance,Long> {
+public interface EC2InstanceRepository extends JpaRepository<EC2Instance,Long> {
 
     @Query(value = "select instance_id from ec2instance",nativeQuery = true)
     List<String> getAllInstanceIds();

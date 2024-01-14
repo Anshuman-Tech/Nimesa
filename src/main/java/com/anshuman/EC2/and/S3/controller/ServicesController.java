@@ -1,103 +1,51 @@
 package com.anshuman.EC2.and.S3.controller;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.anshuman.EC2.and.S3.entity.Job;
-import com.anshuman.EC2.and.S3.enums.Status;
-import com.anshuman.EC2.and.S3.repository.BucketFileRepository;
-import com.anshuman.EC2.and.S3.repository.BucketRepository;
-import com.anshuman.EC2.and.S3.repository.JobRepository;
-import com.anshuman.EC2.and.S3.service.EC2Service;
-import com.anshuman.EC2.and.S3.service.HelperService;
+import com.anshuman.EC2.and.S3.service.EC2InstanceService;
+import com.anshuman.EC2.and.S3.service.JobService;
+import com.anshuman.EC2.and.S3.service.S3BucketService;
+import com.anshuman.EC2.and.S3.service.ServicesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
 public class ServicesController {
 
     @Autowired
-    private BucketFileRepository bucketFileRepository;
+    private EC2InstanceService ec2InstanceService;
 
     @Autowired
-    private BucketRepository bucketRepository;
-
-    private final JobRepository jobRepository;
-    public ServicesController(JobRepository jobRepository){
-        this.jobRepository = jobRepository;
-    }
-    @Autowired
-    private HelperService service;
+    private S3BucketService s3BucketService;
 
     @Autowired
-    private EC2Service ec2Service;
+    private ServicesService servicesService;
 
     @Autowired
-    private AmazonS3 s3Client;
+    private JobService jobService;
 
     //1
     @GetMapping(value = "/discoverServices")
     public ResponseEntity<String> discoverServices(@RequestParam List<String> services){
-        String res = service.helper1();
-        service. helper(res,services);
-        return ResponseEntity.status(HttpStatus.OK).body(res);
-    }
-
-    //2
-    @GetMapping("/getJobResult/{jobId}")
-    public ResponseEntity<String> getJobResult(@PathVariable String jobId){
-        Optional<Job> job = jobRepository.findById(jobId);
-        if(!job.isPresent()){
-            throw new RuntimeException("Not present");
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.OK).body(job.get().getStatus());
-        }
+        String jobId = jobService.saveJob();
+        servicesService.saveServiceToDB(jobId,services);
+        return ResponseEntity.status(HttpStatus.OK).body(jobId);
     }
 
     //3
     @GetMapping("/getDiscoveryResult")
-    public ResponseEntity<List<? extends Object>> getDiscoveryResult(@RequestParam() String service){
-        if(service.equalsIgnoreCase("S3")){
-
-            //Get the result using the s3Client
-//            return ResponseEntity.status(HttpStatus.OK).body(s3Client.listBuckets());
-            //Get the result using the query.
-            return ResponseEntity.status(HttpStatus.OK).body(bucketRepository.findAll());
+    public ResponseEntity<List<? extends Object>> getDiscoveryResult(@RequestParam() String service) {
+        if (service.equalsIgnoreCase("S3")) {
+            return ResponseEntity.status(HttpStatus.OK).body(s3BucketService.getAllS3Bucket());
         }
-        Optional<List<String>> result = ec2Service.getListOfEC2InstanceIds();
-        //Return list of db results for EC2 instances.
+        Optional<List<String>> result = ec2InstanceService.getListOfEC2InstanceIds();
         return ResponseEntity.status(HttpStatus.OK).body(result.get());
-    }
-
-    //4
-    @GetMapping("/getS3BucketObjects")
-    public ResponseEntity<String> getS3BucketObjects(@RequestParam() String bucketName){
-        //run a job to get the list of files for the given bucketName.
-        String jobId = UUID.randomUUID().toString();
-        jobRepository.save(new Job(jobId,Status.INPROGRESS.toString()));
-        service.saveListOfS3ObjectsToDB(jobId,bucketName);
-
-        return ResponseEntity.status(HttpStatus.OK).body(jobId);
-    }
-
-    //5
-    @GetMapping("/getS3BucketObjectCount")
-    public ResponseEntity<Integer> getS3BucketObjectCount(@RequestParam() String bucketName){
-        int res = bucketFileRepository.countByBucketName(bucketName);
-        return ResponseEntity.status(HttpStatus.OK).body(res);
-    }
-
-    //6
-    @GetMapping("/getS3BucketObjectLike")
-    public ResponseEntity<List<String>> getS3BucketObjectLike(@RequestParam String bucketName,@RequestParam String pattern){
-        List<String> fileNames = bucketFileRepository.findAllByBucketNameAndFileKeyLike(bucketName,pattern);
-        return ResponseEntity.status(HttpStatus.OK).body(fileNames);
     }
 }
